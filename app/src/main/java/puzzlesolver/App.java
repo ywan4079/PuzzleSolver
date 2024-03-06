@@ -3,12 +3,49 @@
  */
 package puzzlesolver;
 
-public class App {
-    public String getGreeting() {
-        return "Hello World!";
-    }
+import java.io.*;
+import java.util.*;
 
-    public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+import org.w3c.dom.html.HTMLPreElement;
+
+public class App {
+
+    public static int WIDTH;
+    public static int HEIGHT;
+    public static void main(String[] args) throws Exception {
+
+        // Read puzzles
+        List<List<String>> records = new ArrayList<List<String>>();
+
+        try (BufferedReader br = new BufferedReader(new FileReader("./../puzzles.csv"))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] values = line.split(",");
+                records.add(Arrays.asList(values));
+            }
+            br.close();
+        } catch (Exception e) {
+            e.getStackTrace();
+            System.out.println("Error occurred while reading puzzles document");
+        }
+
+        // Create puzzles
+        List<Puzzle> puzzles = new ArrayList<>();
+        for(int i = 1; i < records.size(); i++) {
+            puzzles.add(new Puzzle(records.get(i).get(0), records.get(i).get(1), records.get(i).get(2)));
+        }
+
+        try {
+            File f = new File("./../frame_size.txt");
+            Scanner reader = new Scanner(f);
+            String[] size = reader.nextLine().split(" ");
+            WIDTH = Integer.parseInt(size[0]);
+            HEIGHT = Integer.parseInt(size[1]);
+        } catch (Exception e) {
+            e.getStackTrace();
+            System.out.println("Error occurred while reading frame size document");
+        }
+
+        
     }
 }
