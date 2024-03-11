@@ -1,5 +1,6 @@
 package puzzlesolver;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,6 +30,14 @@ public class Solver {
         }else return false;
     }
 
+    public static void Draw(Color[][] colors, Puzzle puzzle, int i, int j) {
+        for(int h = i; h < i+puzzle.height; h++) {
+            for(int w = j; w < j+puzzle.width; w++) {
+                if(puzzle.shape[h-i][w-j]) colors[h][w] = puzzle.color_hex;
+            }
+        }
+    }
+
     public static int solve(int WIDTH, int HEIGHT, List<Puzzle> puzzles){
         int solution = 0;
 
@@ -45,33 +54,35 @@ public class Solver {
         }
 
         int total_iteration = (HEIGHT - puzzles.get(0).height + 1) * (WIDTH - puzzles.get(0).width + 1), counter = 0;
-
+        System.out.print("Progress: 0%\r");
         for(int i = 0; i <= HEIGHT - puzzles.get(0).height; i++) {
             for(int j = 0; j <= WIDTH - puzzles.get(0).width; j++) {
                 //-1 means occupied, other integers mean the possible ways can be covered
                 int[][] possibility = new int[HEIGHT][WIDTH]; 
+                Color[][] colors = new Color[HEIGHT][WIDTH];
                 List<Puzzle> puzzles_copy = new ArrayList<>(puzzles);
                 puzzles_copy.remove(0);
                 Put(possibility, puzzles.get(0), i, j);
+                Draw(colors, puzzles.get(0), i, j);
                 Calculate_Possibility(possibility, puzzles_copy);
                 
-                solution += DFS(possibility, puzzles_copy);
+                solution += DFS(possibility, puzzles_copy, colors);
 
                 double progress = (double)(++counter)/total_iteration*100;
-                System.out.println("Progress: " + (int)progress + "%");
+                System.out.print("Progress: " + (int)progress + "%\r");
             }
         }
-
-        // Store the information of how does the frame look likes
-
-        // if(HEIGHT != WIDTH) ...
+        System.out.println();
 
         return solution;
     }
 
-    public static int DFS(int[][] possibility, List<Puzzle> puzzles) {
+    public static int DFS(int[][] possibility, List<Puzzle> puzzles, Color[][] colors) {
 
-        if(puzzles.size() == 0) return 1;
+        if(puzzles.size() == 0) {
+            App.finished_puzzles.add(colors);
+            return 1;
+        }
 
         int min = Integer.MAX_VALUE, HEIGHT = possibility.length, WIDTH = possibility[0].length, min_i = 0, min_j = 0;
         for(int i = 0; i < HEIGHT; i++){
@@ -100,12 +111,14 @@ public class Solver {
                         for(int j = init_j; j <= end_j; j++){
                             if(FitIn(possibility, p, i, j) && p.shape[min_i-i][min_j-j]){
                                 int[][] new_possiblity = Copy_2D_Array(possibility);
+                                Color[][] new_colors = Copy_Colors(colors);
                                 Clear_Possibility(new_possiblity);
                                 Put(new_possiblity, p, i, j);
+                                Draw(new_colors, p, i, j);
                                 List<Puzzle> new_puzzles = new ArrayList<>(puzzles);
                                 new_puzzles.remove(p);
                                 Calculate_Possibility(new_possiblity, new_puzzles);
-                                solution += DFS(new_possiblity, new_puzzles);
+                                solution += DFS(new_possiblity, new_puzzles, new_colors);
                             }
                         }
                     }
@@ -118,6 +131,16 @@ public class Solver {
 
         return solution;
 
+    }
+
+    public static Color[][] Copy_Colors(Color[][] colors) {
+        Color[][] ret = new Color[colors.length][colors[0].length];
+        for(int i = 0; i < colors.length; i++) {
+            for(int j = 0; j < colors[0].length; j++) {
+                ret[i][j] = colors[i][j];
+            }
+        }
+        return ret;
     }
 
     public static int[][] Copy_2D_Array(int[][]possibility){

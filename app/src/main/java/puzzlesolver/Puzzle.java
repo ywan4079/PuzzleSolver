@@ -1,5 +1,7 @@
 package puzzlesolver;
 
+import java.awt.Color;
+
 // test done
 
 public class Puzzle {
@@ -13,8 +15,9 @@ public class Puzzle {
     public int rotation_times;
     public int flip_times;
     public boolean extra_flip;
+    public Color color_hex;
 
-    public Puzzle(String label, String shape, String color) throws Exception {
+    public Puzzle(String label, String shape, String color, String color_hex) throws Exception {
         this.label = label;
         this.color = color;
         this.area = 0;
@@ -37,6 +40,14 @@ public class Puzzle {
                 }
             }
         }
+
+        try {
+            this.color_hex = Color.decode(color_hex);
+        } catch (Exception e) {
+            e.printStackTrace();
+            System.out.println("Color hex format is incorrect!");
+        }
+        
 
         this.width = this.shape[0].length;
         this.height = this.shape.length;

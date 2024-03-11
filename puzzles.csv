@@ -1,14 +1,14 @@
-label,shape,color_name
-L1,"10 10 11 01",Orange
-C1,"111 101",Dark blue
-O1,"111 111",Light yellow
-L2,"001 001 111",Light pink
-Z1,"100 111 001",Yellow
-H1,"101 111 101",Red
-T1,"10 11 10",Purple
-O2,"11 11",Dark yellow
-L3,"010 111 100",Pink
-T2,"01 01 11 01",Light green
-L4,"001 111",Sky blue
-Z2,"110 011",Light blue
-L5,"1000 1111",Dark green
+label,shape,color_name,color_hex
+L1,"10 10 11 01",Orange,#FF8C00
+C1,"111 101",Dark blue,#0000FF
+O1,"111 111",Light yellow,#DBFF2F
+L2,"001 001 111",Light pink,#FFC0C8
+Z1,"100 111 001",Yellow,#FFFF00
+H1,"101 111 101",Red,#FF0000
+T1,"10 11 10",Purple,#800080
+O2,"11 11",Dark yellow,#FFD700
+L3,"010 111 100",Pink,#EE82EE
+T2,"01 01 11 01",Light green,#00FF00
+L4,"001 111",Sky blue,#00BFFF
+Z2,"110 011",Light blue,#00FFFF
+L5,"1000 1111",Dark green,#008000

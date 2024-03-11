@@ -3,13 +3,18 @@
  */
 package puzzlesolver;
 
+import java.awt.Color;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
+
+import javax.imageio.ImageIO;
 
 public class App {
 
     public static int WIDTH;
     public static int HEIGHT;
+    public static List<Color[][]> finished_puzzles = new ArrayList<>();
     public static void main(String[] args) throws Exception {
 
         // Start time
@@ -33,7 +38,7 @@ public class App {
         // Create puzzles
         List<Puzzle> puzzles = new ArrayList<>();
         for(int i = 1; i < records.size(); i++) {
-            puzzles.add(new Puzzle(records.get(i).get(0), records.get(i).get(1), records.get(i).get(2)));
+            puzzles.add(new Puzzle(records.get(i).get(0), records.get(i).get(1), records.get(i).get(2), records.get(i).get(3)));
         }
 
         // Read frame size
@@ -73,5 +78,70 @@ public class App {
         if(sec.length() == 1) sec = "0" + sec;
         System.out.println("Processing time: " + hours + ":" + mins + ":" + sec);
 
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Do you want to get the images of these solutions?([y]/n)");
+        while(true) {
+            String response = scanner.nextLine();
+            if(response.toLowerCase().equals("y") || response.toLowerCase().equals("")){
+                // Clear images in solutions folder
+                System.out.println("The images in solutions folder are going to be removed. Please back up if required. (Press any key to continue)");
+                scanner.nextLine();
+                System.out.println("Clear images in solutions folder...");
+                int counter = 1;
+                while (new File("./../solutions/" + counter++ + ".jpg").delete()) {
+                    
+                }
+
+                int num_pic;
+                System.out.println("How many pictures do you want?");
+                while (true) {
+                    String input = scanner.next();
+                    try {
+                        num_pic = Integer.parseInt(input);
+                        if(num_pic < 0 || num_pic > solution){
+                            System.out.println("Please enter a valid integer");
+                            continue;
+                        }
+                        break;
+                    } catch (Exception e) {
+                        System.out.println("Please enter an integer");
+                    }    
+                }
+                
+                System.out.println("Generating images...");
+
+                counter = 1;
+
+                for(Color[][] c : finished_puzzles) {
+                    if(num_pic == 0) break;
+                    BufferedImage bufferedImage = new BufferedImage(c[0].length*100, c.length*100, BufferedImage.TYPE_INT_RGB);
+                    for (int x = 0; x < c.length; x++) {
+                        for (int y = 0; y < c[0].length; y++) {
+
+                            for(int i = x*100; i < x*100+100; i++){
+                                for(int j = y*100; j < y*100+100; j++){
+                                    bufferedImage.setRGB(j, i, c[y][x].getRGB());
+                                }
+                            }
+
+                        }
+                    }
+                    try {
+                        ImageIO.write(bufferedImage, "jpg", new File("./../solutions/" + counter++ + ".jpg"));
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        System.out.println("Error occurred during generating images");
+                    }
+                    num_pic--;
+                }
+                break;
+            } else if (response.toLowerCase().equals("n")) break;
+            else {
+                System.out.println("Please enter valid input");
+                continue;
+            }
+        }
+        scanner.close();
     }
 }
