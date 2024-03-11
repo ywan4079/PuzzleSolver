@@ -6,13 +6,14 @@ package puzzlesolver;
 import java.io.*;
 import java.util.*;
 
-import org.w3c.dom.html.HTMLPreElement;
-
 public class App {
 
     public static int WIDTH;
     public static int HEIGHT;
     public static void main(String[] args) throws Exception {
+
+        // Start time
+        long startTime = System.currentTimeMillis();
 
         // Read puzzles
         List<List<String>> records = new ArrayList<List<String>>();
@@ -35,17 +36,42 @@ public class App {
             puzzles.add(new Puzzle(records.get(i).get(0), records.get(i).get(1), records.get(i).get(2)));
         }
 
+        // Read frame size
         try {
             File f = new File("./../frame_size.txt");
             Scanner reader = new Scanner(f);
             String[] size = reader.nextLine().split(" ");
             WIDTH = Integer.parseInt(size[0]);
             HEIGHT = Integer.parseInt(size[1]);
+            reader.close();
         } catch (Exception e) {
             e.getStackTrace();
             System.out.println("Error occurred while reading frame size document");
         }
 
+        // Check if all puzzles can fit in the frame
+        int area_sum = 0;
+        for(Puzzle p : puzzles) area_sum += p.area;
+        if(WIDTH*HEIGHT != area_sum) throw new Exception("It's impossible to fit in all puzzles in the given frame. Please either change the size of puzzles or frame.");
         
+        
+        int solution = Solver.solve(WIDTH, HEIGHT, puzzles);
+        if(WIDTH != HEIGHT) {
+            System.out.println("Because the frame is not a square, we need to calculate the frame in another direction.");
+            solution += Solver.solve(HEIGHT, WIDTH, puzzles);
+        }
+
+        System.out.println(solution + " solutions found");
+
+        // End time
+        long endTime = System.currentTimeMillis();
+
+        long time_taken = (endTime - startTime)/1000; // in sec
+        String  hours = String.valueOf(time_taken/3600), mins = String.valueOf((time_taken/60)%60), sec = String.valueOf(time_taken%60);
+        if(hours.length() == 1) hours = "0" + hours;
+        if(mins.length() == 1) mins = "0" + mins;
+        if(sec.length() == 1) sec = "0" + sec;
+        System.out.println("Processing time: " + hours + ":" + mins + ":" + sec);
+
     }
 }
