@@ -4,17 +4,25 @@
 package puzzlesolver;
 
 import java.awt.Color;
+import java.awt.Frame;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
 
 import javax.imageio.ImageIO;
+import javax.swing.JFrame;
 
 public class App {
 
     public static int WIDTH;
     public static int HEIGHT;
+    public static int pixel_size = 100;
     public static List<Color[][]> finished_puzzles = new ArrayList<>();
+    public static JFrame frame = new JFrame("Visualization of puzzle solver");
+    public static boolean show_window = true;
     public static void main(String[] args) throws Exception {
 
         // Start time
@@ -58,6 +66,19 @@ public class App {
         int area_sum = 0;
         for(Puzzle p : puzzles) area_sum += p.area;
         if(WIDTH*HEIGHT != area_sum) throw new Exception("It's impossible to fit in all puzzles in the given frame. Please either change the size of puzzles or frame.");
+
+        // Set up frame
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+
+        //Display the window
+        frame.setSize(WIDTH*pixel_size, HEIGHT*pixel_size);
+        WindowListener listener = new WindowAdapter() {
+            public void windowClosing(WindowEvent evt) {
+                show_window = false;
+             }
+        };
+        frame.addWindowListener(listener);
+        frame.setVisible(true);
         
         
         int solution = Solver.solve(WIDTH, HEIGHT, puzzles);
@@ -65,6 +86,8 @@ public class App {
             System.out.println("Because the frame is not a square, we need to calculate the frame in another direction.");
             solution += Solver.solve(HEIGHT, WIDTH, puzzles);
         }
+
+        frame.setVisible(false);
 
         System.out.println(solution + " solutions found");
 
@@ -115,12 +138,12 @@ public class App {
 
                 for(Color[][] c : finished_puzzles) {
                     if(num_pic == 0) break;
-                    BufferedImage bufferedImage = new BufferedImage(c[0].length*100, c.length*100, BufferedImage.TYPE_INT_RGB);
+                    BufferedImage bufferedImage = new BufferedImage(c[0].length*pixel_size, c.length*pixel_size, BufferedImage.TYPE_INT_RGB);
                     for (int x = 0; x < c.length; x++) {
                         for (int y = 0; y < c[0].length; y++) {
 
-                            for(int i = x*100; i < x*100+100; i++){
-                                for(int j = y*100; j < y*100+100; j++){
+                            for(int i = x*pixel_size; i < x*pixel_size+pixel_size; i++){
+                                for(int j = y*pixel_size; j < y*pixel_size+pixel_size; j++){
                                     bufferedImage.setRGB(j, i, c[y][x].getRGB());
                                 }
                             }

@@ -1,8 +1,30 @@
 package puzzlesolver;
 
 import java.awt.Color;
+import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.JPanel;
+
+class Shape extends JPanel{
+
+    Color[][] colors;
+
+    public Shape(Color[][] colors){
+        this.colors = colors;
+    }
+
+    @Override
+    public void paint(Graphics g){
+        for(int i = 0; i < this.colors.length; i++){
+            for(int j = 0; j < this.colors[0].length; j++){
+                g.setColor(this.colors[i][j]);
+                g.fillRect(i*100, j*100, 100, 100);
+            }
+        }
+    }
+}
 
 public class Solver {
 
@@ -64,6 +86,12 @@ public class Solver {
                 puzzles_copy.remove(0);
                 Put(possibility, puzzles.get(0), i, j);
                 Draw(colors, puzzles.get(0), i, j);
+            
+                if(App.show_window){
+                    App.frame.add(new Shape(colors));
+                    App.frame.setVisible(true);
+                }
+
                 Calculate_Possibility(possibility, puzzles_copy);
                 
                 solution += DFS(possibility, puzzles_copy, colors);
@@ -115,6 +143,12 @@ public class Solver {
                                 Clear_Possibility(new_possiblity);
                                 Put(new_possiblity, p, i, j);
                                 Draw(new_colors, p, i, j);
+
+                                if(App.show_window){
+                                    App.frame.add(new Shape(new_colors));
+                                    App.frame.setVisible(true);
+                                }
+
                                 List<Puzzle> new_puzzles = new ArrayList<>(puzzles);
                                 new_puzzles.remove(p);
                                 Calculate_Possibility(new_possiblity, new_puzzles);
